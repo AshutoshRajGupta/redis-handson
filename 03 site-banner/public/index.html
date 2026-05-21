@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redis Banner Demo</title>
+
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+      }
+
+      #banner {
+        background: #222;
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: none;
+      }
+
+      input {
+        padding: 10px;
+        width: 300px;
+      }
+
+      button {
+        padding: 10px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Redis Banner System</h1>
+
+    <!-- banner -->
+    <div id="banner"></div>
+
+    <!-- input -->
+    <input type="text" id="messageInput" placeholder="Enter banner message" />
+
+    <button onclick="updateBanner()">Update Banner</button>
+
+    <button onclick="deleteBanner()">Delete Banner</button>
+
+    <script>
+      // fetch banner when page loads
+      async function loadBanner() {
+        const response = await fetch("http://localhost:3000/banner");
+
+        const data = await response.json();
+
+        const banner = document.getElementById("banner");
+
+        if (data.message) {
+          banner.style.display = "block";
+          banner.innerText = data.message;
+        } else {
+          banner.style.display = "none";
+        }
+      }
+
+      // update banner
+      async function updateBanner() {
+        const message = document.getElementById("messageInput").value;
+
+        await fetch("http://localhost:3000/banner", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message }),
+        });
+
+        loadBanner();
+      }
+
+      // delete banner
+      async function deleteBanner() {
+        await fetch("http://localhost:3000/banner", {
+          method: "DELETE",
+        });
+
+        loadBanner();
+      }
+
+      // initial load
+      loadBanner();
+    </script>
+  </body>
+</html>
